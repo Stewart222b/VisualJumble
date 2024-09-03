@@ -33,25 +33,35 @@ class Sharpness:
         self.hist = args.hist # show the statistics as a histogram
         self.save_csv = str(args.save_csv[0] if isinstance(args.save_csv, list) else args.save_csv) # save the sharpness values to result.csv file
         self.size = args.size # input size
+        self.fps = args.fps # fps
 
     # calculate clarity by getting the variance of the laplacian
     def get(self,):
         count = 0
         images = self.frames['imgs']
         videos = self.frames['vids']
+
+        # handle videos
         for vid in videos:
-            print(vid)
             cap = cv2.VideoCapture(vid)
             out = self.config_writer(cap, self.save_dir + '/' + vid.split('/')[-1])
+
+            fps_count = 0
+            old_sharpness = None
             while cap.isOpened():
                 ret, frame = cap.read()  # read one frame
                 if not ret:
                     break  # exit if no frame get
+                fps_count += 1
                 count += 1
                 sharpness = self.calculate_sharpness(frame, vid, count)
                 if self.visualize:
-                    self.draw_texts(frame, sharpness, out=out)
+                    if (fps_count % self.fps == 0) or (not old_sharpness):
+                        old_sharpness = sharpness
+                    self.draw_texts(frame, old_sharpness, out=out)
             cap.release()
+
+        # handle images
         for img in images:
             frame = cv2.imread(img)
             count += 1
@@ -144,7 +154,7 @@ class Sharpness:
         return out
     
     def draw_texts(self, frame, sharpness, img_name=None, out=None):
-        cv2.putText(frame, f'Hello, OpenCV! {sharpness}', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+        cv2.putText(frame, f'Current clarity: {sharpness}', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 3)
         if out:
             out.write(frame)
         else:
