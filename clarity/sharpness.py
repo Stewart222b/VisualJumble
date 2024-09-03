@@ -34,6 +34,7 @@ class Sharpness:
         self.save_csv = str(args.save_csv[0] if isinstance(args.save_csv, list) else args.save_csv) # save the sharpness values to result.csv file
         self.size = args.size # input size
         self.fps = args.fps # fps
+        self.threshold = 1000
 
     # calculate clarity by getting the variance of the laplacian
     def get(self,):
@@ -58,7 +59,7 @@ class Sharpness:
                 if self.visualize:
                     if (fps_count % self.fps == 0) or (not old_sharpness):
                         old_sharpness = sharpness
-                    self.draw_texts(frame, old_sharpness, out=out)
+                    self.draw_texts(frame, old_sharpness, out=out, count=count)
             cap.release()
 
         # handle images
@@ -89,7 +90,8 @@ class Sharpness:
 
     # calculate the variance of the laplacian
     def variance_of_laplacian(self, src):
-        return cv2.Laplacian(src, cv2.CV_64F).var()
+        var = cv2.Laplacian(src, cv2.CV_64F).var()
+        return round(var, 2)
 
     def get_frames(self):
         frames = {'imgs':[], 'vids':[]}
@@ -153,15 +155,21 @@ class Sharpness:
         out = cv2.VideoWriter(file_name, fourcc, 30.0, (w, h))
         return out
     
-    def draw_texts(self, frame, sharpness, img_name=None, out=None):
-        cv2.putText(frame, f'Current clarity: {sharpness}', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 3)
+    def draw_texts(self, frame, sharpness, img_name=None, out=None, count=None):
+        cv2.rectangle(frame, (0, 0), (600, 65), (0, 0, 0), thickness=-1)
+        cv2.putText(frame, f'Current clarity: {sharpness}', (0, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255, 255, 255), 3)
+
+        cv2.rectangle(frame, (0, 65), (250, 130), (0, 0, 0), thickness=-1)
+        if sharpness < self.threshold:
+            cv2.putText(frame, f'Not Clear', (0, 110), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 3)
+        else:
+            cv2.putText(frame, f'Clear', (0, 110), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 3)
+    
         if out:
             out.write(frame)
         else:
             cv2.imwrite(img_name, frame)
-
-            
-    
+              
     def save(self, file_name='result.csv'):
         with open(file_name, 'a') as file:  # 'a' for append
             for frame, sharpness in self.scores:
