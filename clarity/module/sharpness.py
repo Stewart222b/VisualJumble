@@ -9,10 +9,11 @@ import cv2
 import glob
 import os
 import sys
+import matplotlib.pyplot as plt
 from pathlib import Path
 
 FILE = Path(__file__).resolve()
-ROOT = FILE.parents[0]  # root directory
+ROOT = FILE.parents[1]  # root directory
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 #ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
@@ -28,10 +29,11 @@ class Sharpness:
         self.scores = []
 
     def parse_opt(self, args):
+        print(args)
         self.source = str(args.source[0] if isinstance(args.source, list) else args.source) # source path
         self.visualize = args.visualize # visualize the result
         self.hist = args.hist # show the statistics as a histogram
-        self.save_csv = str(args.save_csv[0] if isinstance(args.save_csv, list) else args.save_csv) # save the sharpness values to result.csv file
+        self.save_csv = args.save_csv # save the sharpness values to result.csv file
         self.size = args.size # input size
         self.fps = args.fps # fps
         self.threshold = 1000
@@ -129,7 +131,6 @@ class Sharpness:
 
     # show the histogram using Matplotlib
     def show_hist(self):
-        import matplotlib.pyplot as plt
         plt.figure(figsize=(10, 6))
         n, bins, patches = plt.hist([item[1] for item in self.scores], bins=10, color='blue', edgecolor='black')
         # Add the sum of every column
