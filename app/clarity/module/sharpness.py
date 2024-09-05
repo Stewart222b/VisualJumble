@@ -10,13 +10,18 @@ import glob
 import os
 import sys
 import matplotlib.pyplot as plt
+#from utils.visualize import *
 from pathlib import Path
 
 FILE = Path(__file__).resolve()
-ROOT = FILE.parents[1]  # root directory
+
+ROOT = FILE.parents[2]  # root directory
+print(str(FILE))
+print(ROOT)
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 #ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
+from utils.visualize import *
 
 class Sharpness:
     def __init__(self, args):
@@ -46,8 +51,9 @@ class Sharpness:
 
         # handle videos
         for vid in videos:
-            cap = cv2.VideoCapture(vid)
-            out = self.config_writer(cap, self.save_dir + '/' + vid.split('/')[-1])
+            #cap = cv2.VideoCapture(vid)
+            #cap, writer = self.config_writer(vid, self.save_dir + '/' + vid.split('/')[-1])
+            cap, writer = config_writer(vid, self.save_dir + '/' + vid.split('/')[-1])
 
             fps_count = 0
             old_sharpness = None
@@ -61,7 +67,7 @@ class Sharpness:
                 if self.visualize:
                     if (fps_count % self.fps == 0) or (not old_sharpness):
                         old_sharpness = sharpness
-                    self.draw_texts(frame, old_sharpness, out=out, count=count)
+                    self.draw_texts(frame, old_sharpness, out=writer, count=count)
             cap.release()
 
         # handle images
@@ -143,10 +149,12 @@ class Sharpness:
         plt.grid(True)
         plt.show()
 
-    def config_writer(self, cap, file_name):
+    def config_writer(self, vid, file_name):
         if not self.visualize:
             return None
         
+        cap = cv2.VideoCapture(vid)
+
         # get width and height
         w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))

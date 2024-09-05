@@ -1,5 +1,16 @@
 import argparse
-from module.sharpness import *
+import sys
+from app.clarity import module
+from pathlib import Path
+
+FILE = Path(__file__).resolve()
+
+ROOT = FILE.parents[0]  # root directory
+print(ROOT)
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))  # add ROOT to PATH
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Simple tool of calculating sharpness")
@@ -14,6 +25,6 @@ if __name__ == "__main__":
 
     # arguments
     args = parser.parse_args()
-    clarity_tool = Sharpness(args)
+    clarity_tool = module.sharpness.Sharpness(args)
 
     clarity_tool.get() # get the clarity
