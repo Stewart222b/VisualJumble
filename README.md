@@ -1,8 +1,10 @@
 # VisualJumble
 
+## Introduction
+
 Just wanna make some simple stuff for you guys to use :)
 
-
+## Features
 ### Apps
 
 Some simple apps.
@@ -26,4 +28,6 @@ Some simple tools.
 
 Some [datasets]().
 
----
+## More
+
+Nothing yet here...
