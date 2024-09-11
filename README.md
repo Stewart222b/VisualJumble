@@ -1,11 +1,8 @@
 # VisualJumble
 
-## Introduction
-
 Just wanna make some simple stuff for you guys to use :)
 
-## Features
-### Apps
+## Apps
 
 Some simple apps.
 
@@ -14,7 +11,7 @@ Some simple apps.
 - [Occlusion]()
 
 
-### Tools
+## Tools
 
 Some simple tools.
 
@@ -23,8 +20,7 @@ Some simple tools.
 - [Image capture]()
 
 
-
-### Datasets
+## Datasets
 
 Some [datasets]().
 
