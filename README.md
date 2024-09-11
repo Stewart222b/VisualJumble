@@ -5,8 +5,6 @@ Just wanna make some simple stuff for you guys to use :)
 
 ### Apps
 
----
-
 Some simple apps.
 
 - [Clarity]()
@@ -15,8 +13,6 @@ Some simple apps.
 
 
 ### Tools
-
----
 
 Some simple tools.
 
@@ -28,9 +24,6 @@ Some simple tools.
 
 ### Datasets
 
----
-
 Some [datasets]().
-
 
 ---
