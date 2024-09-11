@@ -2,24 +2,22 @@
 
 Some simple tools
 
-## Label Conversion Tool (planned)
+## Label Conversion Tool
 
 These modules help you to convert the labels to different popular formats.
 
-####  txt_xml_conversion.py
+####  txt_json.py
 
-funciton: Convert between .txt and .xml format
-file: txt_xml_conversion.py
+funciton: Convert between .txt and .json format
 
-####  Label conversion between .txt and .json format (planned)
+####  txt_xml.py
 
-function: Convert between .txt and .json format
-file: txt_json_conversion.py
+function: Convert between .txt and .xml format
 
-####  Label conversion between .json and .xml format (planned)
+####  json_xml.py
 
-function: Convert between .txt and .json format
-file: json_xml_conversion.py
+function: Convert between .json and .xml format
+
 
 ## Image Capture Tool (planned)
 
