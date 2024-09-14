@@ -78,6 +78,7 @@ class Info(Message):
     
 class Progress(Message):
     def __new__(cls):
+        super(Progress, cls).__new__(cls)
         return super(Color, cls).__new__(cls)
 
     def __init__(self):
