@@ -1,6 +1,4 @@
 import inspect
-import sys
-import time
 
 class Color:
     RED = '\033[31m'
@@ -79,23 +77,21 @@ class Info(Message):
         return super(Info, cls).__new__(cls, text=info_message, color=cls._info_color, prefix=cls.__name__)
     
 class Progress(Message):
+    def __new__(cls):
+        return super(Color, cls).__new__(cls)
+
     def __init__(self):
         self._info_color = 'blue'
         self.bar_base = '█▓▒░' # 100% filled, 75% filled, 50% filled, 25% filled
     
-    def __new__(cls):
-        return super(Color, cls).__new__(cls)
-    
     def progress_bar(self, current: int, total: int, text = None, bar_length=40):
-        # 计算完成比例
         fraction = current / total
         
-        # 填充进度条
         filled_length = int(bar_length * fraction)
         bar = self.bar_base[0] * filled_length + '-' * (bar_length - filled_length)
         
-        # 打印进度条
         percent = fraction * 100
-        #sys.stdout.write(f'')
-        sys.stdout.write(f'\r{text}\n|{bar}| {percent:.2f}% Complete')
-        sys.stdout.flush()  # 刷新输出
+        print(f'\r{text}\n[{current}/{total}]|{bar}| {percent:.2f}% Complete', end='',)
+
+        if current == total:
+            print()
