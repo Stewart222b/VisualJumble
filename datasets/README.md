@@ -1,7 +1,6 @@
-# Collection of some *practical* datasets
+# Collection of some datasets
 
-Just quick intro and links of some of the datasets that I have used personally. Thus, you are not expected to see lots of **huge** datasets. Besides, I classified these datasets based on their contents, not by tasks.
-
+Just include some datasets I used personally. 
 
 ---
 
