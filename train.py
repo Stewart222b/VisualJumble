@@ -1,4 +1,5 @@
-from models.training_engine import parse_args, main
+from models import TrainEngine
 
 if __name__ == '__main__':
-    main(parse_args())
+    engine = TrainEngine()
+    engine.start()
