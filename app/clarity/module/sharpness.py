@@ -6,12 +6,12 @@
 
 #import argparse
 import cv2
-import glob
 import os
 import sys
 import matplotlib.pyplot as plt
 #from utils.visualize import *
 from pathlib import Path
+from utils import *
 
 FILE = Path(__file__).resolve()
 
@@ -26,16 +26,16 @@ from utils.visualize import *
 class Sharpness:
     def __init__(self, args):
         self.parse_opt(args)
-        self.img_format = ['jpg', 'jpeg', 'png']
-        self.vid_format = ['mp4', '264', 'h264']
-        self.save_dir =  str(self.get_save_dir(args.save_dir))
+        self.img_format = ['.jpg', '.jpeg', '.png']
+        self.vid_format = ['.mp4', '.264', '.h264']
+        self.save_dir =  Path(self.get_save_dir(args.save_dir))
         self.frames = self.get_frames()
         self.frame_count = self.get_frame_count() 
         self.scores = []
 
     def parse_opt(self, args):
         print(args)
-        self.source = str(args.source[0] if isinstance(args.source, list) else args.source) # source path
+        self.source = Path(args.source[0] if isinstance(args.source, list) else args.source) # source path
         self.visualize = args.visualize # visualize the result
         self.hist = args.hist # show the statistics as a histogram
         self.save_csv = args.save_csv # save the sharpness values to result.csv file
@@ -46,38 +46,41 @@ class Sharpness:
     # calculate clarity by getting the variance of the laplacian
     def get(self,):
         count = 0
-        images = self.frames['imgs']
+        images = self.frames['imgs'] 
         videos = self.frames['vids']
 
         # handle videos
-        for vid in videos:
-            #cap = cv2.VideoCapture(vid)
-            #cap, writer = self.config_writer(vid, self.save_dir + '/' + vid.split('/')[-1])
-            cap, writer = config_writer(vid, self.save_dir + '/' + vid.split('/')[-1])
+        if videos:
+            print(Info('handle videos'))
+            for vid in videos:
+                #cap = cv2.VideoCapture(vid)
+                #cap, writer = self.config_writer(vid, self.save_dir + '/' + vid.split('/')[-1])
+                cap, writer = config_writer(vid, f'{self.save_dir}/{vid.name}')
 
-            fps_count = 0
-            old_sharpness = None
-            while cap.isOpened():
-                ret, frame = cap.read()  # read one frame
-                if not ret:
-                    break  # exit if no frame get
-                fps_count += 1
-                count += 1
-                sharpness = self.calculate_sharpness(frame, vid, count)
-                if self.visualize:
-                    if (fps_count % self.fps == 0) or (not old_sharpness):
-                        old_sharpness = sharpness
-                    self.draw_texts(frame, old_sharpness, out=writer, count=count)
-            cap.release()
+                fps_count = 0
+                old_sharpness = None
+                while cap.isOpened():
+                    ret, frame = cap.read()  # read one frame
+                    if not ret:
+                        break  # exit if no frame get
+                    fps_count += 1
+                    count += 1
+                    sharpness = self.calculate_sharpness(frame, vid, count)
+                    if self.visualize:
+                        if (fps_count % self.fps == 0) or (not old_sharpness):
+                            old_sharpness = sharpness
+                        self.draw_texts(frame, old_sharpness, out=writer, count=count)
+                cap.release()
 
         # handle images
-        for img in images:
-            frame = cv2.imread(img)
-            count += 1
-            sharpness = self.calculate_sharpness(frame, img, count)
-            if self.visualize:
-                self.draw_texts(frame, sharpness, self.save_dir + '/' + img.split('/')[-1])
-
+        if images:
+            print(Info('handle images'))
+            for img in images:
+                frame = cv2.imread(img)
+                count += 1
+                sharpness = self.calculate_sharpness(frame, img, count)
+                if self.visualize:
+                    self.draw_texts(frame, sharpness, f'{self.save_dir}/{img.name}') 
 
         if self.hist:
             self.show_hist()
@@ -85,6 +88,7 @@ class Sharpness:
         if self.save_csv:
             self.save()
 
+        print(Info(f'results saved to: {self.save_dir}'))
         return 
 
     # calculate the sharpness of given frame
@@ -103,16 +107,15 @@ class Sharpness:
 
     def get_frames(self):
         frames = {'imgs':[], 'vids':[]}
-        src_files = glob.glob(os.path.join(self.source, '*'))
-        #src_files = os.listdir(self.source)
+        src_files = self.source.glob('*') if self.source.is_dir() else [self.source]
         for file in src_files:
-            format = file.split('.')[-1]
+            format = file.suffix
             if format in self.img_format:
                 frames['imgs'].append(file)
             elif format in self.vid_format:
                 frames['vids'].append(file)
             else:
-                print(f'Skip invalid file name: {file}')
+                print(Warning(f'Skip invalid file: {file}'))
             
         return frames
 
