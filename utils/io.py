@@ -268,12 +268,17 @@ class Progress(Message):
         
         percent = fraction * 100
         if self.refresh() or current == total:
-            bar_info = f'{UP_ONE_LINE}\r{text}\n[{current}/{total}]|{bar}| {percent:.2f}%'
+            bar_info = f'\r[{current}/{total}]|{bar}| {percent:.2f}%'
+
+            if text:
+                bar_info = f'{UP_ONE_LINE}\r{text}\n{bar_info}'
             if self.show_time:
                 time_cost = round(self.last_update - self.first_update, self.time_digit)
                 time_info = f'{time_cost}s'
                 bar_info = f'{bar_info} | {time_info}'
+
             print(bar_info, end='',)
+            
             self.update_bar(bar_info)
         else:
             print(self.last_bar, end='',)
