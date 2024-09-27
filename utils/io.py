@@ -200,7 +200,7 @@ class Progress(Message):
         progress_bar(current, total, text): Displays the progress bar based on the current and total values. | 根据当前和总值显示进度条。
     """
 
-    def __new__(cls):
+    def __new__(cls, **kwargs):
         """
         Initializes the Progress class and returns a new instance of it. | 初始化Progress类并返回其实例。
 
@@ -216,13 +216,17 @@ class Progress(Message):
 
         Args:
             refresh_rate (float, optional): The refresh rate of the progress bar. Default is 0.1 seconds. | 进度条的刷新率，默认0.1秒。
-            bar_length (int, optional): The length of the progress bar. | 进度条的长度。
+            bar_length (int, optional): The length of the progress bar. Default is 40. | 进度条的长度，默认40。
+            show_time (bool, optional): Whether to show time cost. Default is False | 是否显示耗时，默认 False。
         """
         self._info_color = 'blue'
         self.bar_base = '█▓▒░' # 100% filled, 75% filled, 50% filled, 25% filled | 100% 填充，75% 填充，50% 填充，25% 填充
         self.refrsh_rate = kwargs.get('refresh_rate', 0.1) # By default, refresh bar every 0.1 seconds | 默认每0.1秒刷新一次
         self.bar_length = kwargs.get('bar_length', 40)
+        self.show_time = kwargs.get('show_time', False)
+        self.time_digit = kwargs.get('time_digit', 2)
 
+        self.first_update = self.current_time()
         self.last_update = self.current_time()
         self.last_bar = ''
 
@@ -264,7 +268,11 @@ class Progress(Message):
         
         percent = fraction * 100
         if self.refresh() or current == total:
-            bar_info = f'{UP_ONE_LINE}\r{text}\n[{current}/{total}]|{bar}| {percent:.2f}% Complete'
+            bar_info = f'{UP_ONE_LINE}\r{text}\n[{current}/{total}]|{bar}| {percent:.2f}%'
+            if self.show_time:
+                time_cost = round(self.last_update - self.first_update, self.time_digit)
+                time_info = f'{time_cost}s'
+                bar_info = f'{bar_info} | {time_info}'
             print(bar_info, end='',)
             self.update_bar(bar_info)
         else:
