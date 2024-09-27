@@ -1,28 +1,28 @@
 # VisualJumble
 
-Just wanna make some simple stuff for you guys to use :)
+some CV and DL stuff. 一些关于计算机视觉和深度学习的东西。
 
 ## Apps
 
-Some simple apps.
+Some simple apps. 一些应用。
 
-- [Clarity]()
+- [Clarity](/app/clarity/)
 
-- [Occlusion]()
+- [Occlusion](/app/occlusion/)
 
 
 ## Tools
 
-Some simple tools.
+Some simple tools. 一些工具。
 
-- [Label conversion]()
+- [Label conversion](/tools/README.md)
 
 - [Image capture]()
 
 
 ## Datasets
 
-Some [datasets]().
+Some [datasets](/datasets/README.md). 一些数据集
 
 ## More
 
