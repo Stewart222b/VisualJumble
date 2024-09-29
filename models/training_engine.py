@@ -72,7 +72,7 @@ class TrainEngine:
             else:
                 device = torch.device('mps') # using cuda
 
-        elif device == 'cuda':
+        elif device_name == 'cuda':
             if not torch.cuda.is_available():
                 print(Warning("CUDA is not available. Using CPU."))
                 device = torch.device('cpu')
