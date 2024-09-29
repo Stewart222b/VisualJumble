@@ -62,21 +62,33 @@ class TrainEngine:
         if device_name == 'mps':
             # Check that MPS is available
             if not torch.backends.mps.is_available():
-                device = torch.device('cpu')
                 if not torch.backends.mps.is_built():
                     print(Warning("MPS not available because the current PyTorch install was not "
                         "built with MPS enabled."))
                 else:
                     print(Warning("MPS not available because the current MacOS version is not 12.3+ "
-                        "and/or you do not have an MPS-enabled device on this machine."))
+                        "and/or you do not have an MPS-enabled device on this machine.")) 
+                device = torch.device('cpu')
             else:
-                device = torch.device('mps')
+                device = torch.device('mps') # using cuda
+
+        elif device == 'cuda':
+            if not torch.cuda.is_available():
+                print(Warning("CUDA is not available. Using CPU."))
+                device = torch.device('cpu')
+            else:
+                print(Info("CUDA is available. You can use GPU."))
+                print(Info(f"Number of available GPUs: {torch.cuda.device_count()}"))
+                print(Info(f"Current GPU: {torch.cuda.get_device_name(torch.cuda.current_device())}"))
+                device = torch.device('cuda') # using cuda
         elif device_name == 'cpu':
-            device = torch.device('cpu')
+            device = torch.device('cpu') # using cpu
         else:
+            print(Warning(f'Invalid device name: {device_name}, using cpu instead'))
             device = torch.device('cpu')
 
         print(Info(f'Using device: {device}'))
+
         return device
     
     
