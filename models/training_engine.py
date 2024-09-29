@@ -13,7 +13,7 @@ from torch.optim import *
 from utils import *
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Parse CLI arguments | 解析命令行参数')
+    parser = argparse.ArgumentParser(description='Training parameters| 训练参数')
 
     # 添加参数
     parser.add_argument('--device', type=str, default='mps', help='Training device | 训练设备')
@@ -56,6 +56,21 @@ class TrainEngine:
 
 
     def get_device(self, device_name: str, kwarg: str=None) -> torch.device:
+        """获取 PyTorch 设备。
+
+        根据提供的设备名称返回相应的 PyTorch 设备。
+
+        Args:
+            device_name (str): Device name, can be: | 设备名称，可以是：'mps'、'cuda' 或 'cpu'。
+            kwarg (str, optional): If provided, this device name will be prioritized. | 如果提供，则优先使用此设备名称。
+
+        Returns:
+            torch.device: Returns the corresponding PyTorch device. | 返回相应的 PyTorch 设备。
+
+        Raises:
+            Warning: A warning message will be issued if MPS or CUDA is not available. | 如果 MPS 或 CUDA 不可用，将会发出警告信息。
+
+        """
         if kwarg:
             device_name = kwarg
 
@@ -64,30 +79,32 @@ class TrainEngine:
             if not torch.backends.mps.is_available():
                 if not torch.backends.mps.is_built():
                     print(Warning("MPS not available because the current PyTorch install was not "
-                        "built with MPS enabled."))
+                        "built with MPS enabled."
+                        " | MPS 不可用，因为当前的 PyTorch 安装未启用 MPS。"))
                 else:
                     print(Warning("MPS not available because the current MacOS version is not 12.3+ "
-                        "and/or you do not have an MPS-enabled device on this machine.")) 
+                        "and/or you do not have an MPS-enabled device on this machine."
+                        " | MPS 不可用，因为当前的 MacOS 版本不是 12.3+ 或设备不支持 MPS。")) 
                 device = torch.device('cpu')
             else:
                 device = torch.device('mps') # using cuda
 
         elif device_name == 'cuda':
             if not torch.cuda.is_available():
-                print(Warning("CUDA is not available. Using CPU."))
+                print(Warning("CUDA is not available. Using CPU. | CUDA 不可用，使用 CPU。"))
                 device = torch.device('cpu')
             else:
-                print(Info("CUDA is available. You can use GPU."))
-                print(Info(f"Number of available GPUs: {torch.cuda.device_count()}"))
-                print(Info(f"Current GPU: {torch.cuda.get_device_name(torch.cuda.current_device())}"))
+                print(Info("CUDA is available. You can use GPU. | CUDA 可用，可以使用 GPU。"))
+                print(Info(f"Number of available GPUs: | 可用的 GPU 数量：{torch.cuda.device_count()}"))
+                print(Info(f"Current GPU: | 当前 GPU 名称：{torch.cuda.get_device_name(torch.cuda.current_device())}"))
                 device = torch.device('cuda') # using cuda
         elif device_name == 'cpu':
             device = torch.device('cpu') # using cpu
         else:
-            print(Warning(f'Invalid device name: {device_name}, using cpu instead'))
+            print(Warning(f'Invalid device name: {device_name}, use cpu instead | 设备名称无效，使用 CPU。'))
             device = torch.device('cpu')
 
-        print(Info(f'Using device: {device}'))
+        print(Info(f'Using device: | 正在使用设备：{device}'))
 
         return device
     
@@ -144,7 +161,7 @@ class TrainEngine:
 
     
     def get_optim(self,) -> Optimizer:
-        return SGD(self.model.parameters(), lr=self.lr, weight_decay=1e-4)
+        return SGD(self.model.parameters(), lr=self.lr)
     
     
     def get_criterion(self, ) -> nn.Module:
