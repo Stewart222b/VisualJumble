@@ -12,7 +12,7 @@ class ImageCompressor:
     def __init__(self, tool) -> None:
         if tool not in self.valid_tool:
             print(Error(f'No tool choosed, please choose a valid tool: {self.valid_tool}'))
-            return -1
+            exit()
         self.tool = tool
 
     def compress(self, src, quality=70):
@@ -20,6 +20,7 @@ class ImageCompressor:
             src = Path(src)
         elif type(src) != Path():
             print(Error(f'Invalid source format, please choose a valid source!'))
+            exit()
 
         if self.tool == 'opencv':
             print(Info('Using OpenCV | 使用 OpenCV'))

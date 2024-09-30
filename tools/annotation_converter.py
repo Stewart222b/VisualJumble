@@ -23,7 +23,8 @@ class Converter(ABC):
         '''
         print(f"Checking paths: {self.src_path} -> {self.output_path}")
         if not self.src_path or not self.output_path:
-            raise ValueError("Source or target path is not provided")
+            print(Error("Source or target path is not provided"))
+            exit()
 
     def convert(self):
         """
@@ -166,7 +167,7 @@ class JsonConverter(Converter):
         elif self.label_format == 'bdd100k':
             if not self.image_path:
                 print(Error('Image path needed if json format is bdd100k!'))
-                return -1
+                exit()
             
             for data in json_data:
                 pass
@@ -250,7 +251,7 @@ class JsonConverter(Converter):
             pass
         else:
             print(Error("不支持的格式转换，仅支持 txt, xml"))
-            return -1
+            exit()
 
         return f"transformed {data}"
 
@@ -259,6 +260,7 @@ class JsonConverter(Converter):
             labels = '\n'.join(labels)
         elif type(labels) is not str:
             print(Error("不支持的标注，仅支持 list, str"))
+            exit()
 
         name = name.split('.')[0]
         

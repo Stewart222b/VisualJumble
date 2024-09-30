@@ -21,16 +21,16 @@ def move_file_by_txt(txt_file_path, src_folder, target_folder, mode='move', suff
 
     if not (txt_file_path and src_folder and target_folder):
         print(Error('Not enough arguments provided!'))
-        return -1
+        exit()
 
     if mode != 'copy' and mode != 'move':
         print(Error('Please use a valid mode: <move> or <copy>'))
-        return -1
+        exit()
     
     txt_file_path, src_folder, target_folder = Path(txt_file_path), Path(src_folder), Path(target_folder)
     if not (os.path.exists(txt_file_path) and os.path.exists(src_folder) and os.path.exists(target_folder)):
         print(Error('One or more invalid path detected, please enter correct path.'))
-        return -1
+        exit()
     
     files = []
     with open(txt_file_path, 'r') as file:
@@ -40,7 +40,7 @@ def move_file_by_txt(txt_file_path, src_folder, target_folder, mode='move', suff
             if len(Path(file_name).suffix) < 1 and not suffix:
                 print(Error(f'the file {file_name} does not have any suffix, ' \
                                'and no suffix recieved in args'))
-                return -1
+                exit()
                 
             if len(Path(file_name).suffix) < 1 and suffix:
                 files.append(file_name + '.' + suffix.lstrip('.'))
@@ -80,8 +80,7 @@ def select_and_move_files(source_folder, target_folder, num_files=None, percanta
 
     if num_files and percantage:
         print(Error("Cannot handle both num_files and percantage."))
-        #raise ValueError("Cannot specify both num_files and percantage.")
-        return -1
+        exit()
     
     # 如果文件数小于要选取的数量，返回全部文件
     if len(all_files) <= num_files:
