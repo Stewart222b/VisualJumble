@@ -25,6 +25,7 @@ class MyVGGBlock(nn.Module):
 
 class MyVGG(nn.Module):
     versions = { # int: number of kernels of conv, 'M': Max pooling layer | 数字代表卷积层的输出通道数，'M' 代表最大汇聚层
+        'vgg11nano': [(1, 16), (1, 32), (2, 64), (2, 128), (2, 128)],
         # VGG 11: 8 convs, 3 fc | 8 个卷积层，3 个全连接层
         'vgg11': [(1, 64), (1, 128), (2, 256), (2, 512), (2, 512)],
         # VGG 13: 10 convs, 3 fc | 10 个卷积层，3 个全连接层
@@ -40,9 +41,13 @@ class MyVGG(nn.Module):
 
         self.layers = self.make_layers(version)
         
+        out_channels = 512
+        if version == 'vgg11nano':
+            out_channels = 128
+
         self.fc = nn.Sequential(
             #nn.Flatten(),
-            nn.Linear(512 * 7 * 7, 4096), nn.ReLU(True), nn.Dropout(0.5),
+            nn.Linear(out_channels * 7 * 7, 4096), nn.ReLU(True), nn.Dropout(0.5),
             nn.Linear(4096, 4096), nn.ReLU(True), nn.Dropout(0.5),
             nn.Linear(4096, cls_num)
         )
