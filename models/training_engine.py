@@ -1,16 +1,10 @@
 import argparse
-import numpy as np
 import matplotlib.pyplot as plt
 from typing import *
-
 import torch
-import torch.nn as nn
-from torchvision import datasets, transforms
-from torch.utils.data import DataLoader
 from torch.optim import *
-
-
-from utils import *
+from utils.io import *
+from utils.config import *
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Training parameters| 训练参数')
@@ -21,172 +15,37 @@ def parse_args():
     parser.add_argument('--epoch', type=int, default=10, help='Training epoch | 训练轮数')
     parser.add_argument('--batch', type=int, default=256, help='Training batch | 训练批次')
     parser.add_argument('--lr', type=float, default=0.01, help='Learning rate| 学习率')
-    parser.add_argument('--dataset', type=str, default='fashion_mnist', help=f'Available dataset:{TrainEngine.available_dataset}')
+    parser.add_argument('--optimizer', type=float, default=0.01, help='Optimizer | 优化器')
+    parser.add_argument('--criterion', type=float, default=0.01, help='Criterion | 损失函数')
+    parser.add_argument('--dataset', type=str, default='fashion_mnist', help=f'Available dataset:{param.available_dataset}')
     parser.add_argument('--verbose', action='store_true', help='显示详细信息')
 
     # 解析参数
     args = parser.parse_args()
     return args
 
-class TrainEngine:
-    available_net = ['lenet', 'alexnet']
-    available_dataset = ['fashion_mnist']
-    available_optim = ['sgd']
-    available_criterion = ['ce', 'bce']
 
+class TrainEngine:
     def __init__(self, **kwargs):
+        '''
+        
+        '''
         args = parse_args()
 
-        self.device = self.get_device(args.device, kwargs.get('device', None))
-        self.model = self.get_model(args.model, kwargs.get('model', None))
-        self.epoch = self.get_epoch(args.epoch, kwargs.get('epoch', None))
-        self.batch = self.get_batch(args.batch, kwargs.get('batch', None))
-        self.lr = self.get_lr(args.lr, kwargs.get('lr', None))
-
-        self.optimizer = self.get_optim()
-        self.criterion = self.get_criterion()
-
-        self.train_loader, self.val_loader = self.load_data(args.dataset)
+        self.device = get_device(args.device, kwargs.get('device', None))
+        self.model = get_model(args.model, kwargs.get('model', None)).to(self.device)
+        self.epoch = get_epoch(args.epoch, kwargs.get('epoch', None))
+        self.batch = get_batch(args.batch, kwargs.get('batch', None))
+        self.lr = get_lr(args.lr, kwargs.get('lr', None))
+        self.optimizer = get_optim(args.optimizer, self.model, self.lr, kwargs.get('optimizer', None))
+        self.criterion = get_criterion(args.criterion, kwargs.get('criterion', None))
+        self.train_loader, self.val_loader = load_data(args.dataset, self.batch, kwargs.get('dataset', None))
 
         # 训练过程
         self.train_losses = []
         self.val_losses = []
         self.train_accuracies = []
         self.val_accuracies = []
-
-
-    def get_device(self, device_name: str, kwarg: str=None) -> torch.device:
-        """获取 PyTorch 设备。
-
-        根据提供的设备名称返回相应的 PyTorch 设备。
-
-        Args:
-            device_name (str): Device name, can be: | 设备名称，可以是：'mps'、'cuda' 或 'cpu'。
-            kwarg (str, optional): If provided, this device name will be prioritized. | 如果提供，则优先使用此设备名称。
-
-        Returns:
-            torch.device: Returns the corresponding PyTorch device. | 返回相应的 PyTorch 设备。
-
-        Raises:
-            Warning: A warning message will be issued if MPS or CUDA is not available. | 如果 MPS 或 CUDA 不可用，将会发出警告信息。
-
-        """
-        if kwarg:
-            device_name = kwarg
-
-        if device_name == 'mps':
-            # Check that MPS is available
-            if not torch.backends.mps.is_available():
-                if not torch.backends.mps.is_built():
-                    print(Warning("MPS not available because the current PyTorch install was not "
-                        "built with MPS enabled."
-                        " | MPS 不可用，因为当前的 PyTorch 安装未启用 MPS。"))
-                else:
-                    print(Warning("MPS not available because the current MacOS version is not 12.3+ "
-                        "and/or you do not have an MPS-enabled device on this machine."
-                        " | MPS 不可用，因为当前的 MacOS 版本不是 12.3+ 或设备不支持 MPS。")) 
-                device = torch.device('cpu')
-            else:
-                device = torch.device('mps') # using cuda
-
-        elif device_name == 'cuda':
-            if not torch.cuda.is_available():
-                print(Warning("CUDA is not available. Using CPU. | CUDA 不可用，使用 CPU。"))
-                device = torch.device('cpu')
-            else:
-                print(Info("CUDA is available. You can use GPU. | CUDA 可用，可以使用 GPU。"))
-                print(Info(f"Number of available GPUs: | 可用的 GPU 数量：{torch.cuda.device_count()}"))
-                print(Info(f"Current GPU: | 当前 GPU 名称：{torch.cuda.get_device_name(torch.cuda.current_device())}"))
-                device = torch.device('cuda') # using cuda
-        elif device_name == 'cpu':
-            device = torch.device('cpu') # using cpu
-        else:
-            print(Warning(f'Invalid device name: {device_name}, use cpu instead | 设备名称无效，使用 CPU。'))
-            device = torch.device('cpu')
-
-        print(Info(f'Using device: | 正在使用设备：{device}'))
-
-        return device
-    
-    
-    def get_model(self, model_name: str, kwarg: str=None) -> nn.Module:
-        if kwarg:
-            model_name = kwarg
-        
-        if model_name == 'lenet':
-            from .lenet import MyLeNet
-            model = MyLeNet()
-        elif model_name == 'alexnet':
-            from .alexnet import MyAlexNet
-            model = MyAlexNet()
-        else:
-            print(Error(f'please enter a valid model or network: {TrainEngine.available_net}'))
-            return -1
-
-        model.to(self.device)
-        return model
-    
-    
-    def get_epoch(self, epoch: int, kwarg: int=None) -> int:
-        if kwarg:
-            epoch = kwarg
-
-        if epoch < 1:
-            print(Error(f'Invalid epoch: {epoch}.'))
-            return -1
-
-        return epoch
-    
-    
-    def get_batch(self, batch: int, kwarg: int=None) -> int:
-        if kwarg:
-            batch = kwarg
-
-        if batch < -1 or batch == 0:
-            print(Error(f'Invalid batch size: {batch}. i.e. batch -> (0, inf), -1 for auto-batch'))
-            return -1
-        
-        if batch == -1:
-            print(Warning('Using auto-batch!'))
-
-        return batch
-    
-    
-    def get_lr(self, lr: float, kwarg: float=None) -> float:
-        if lr <= 0 or lr >= 1:
-            print(Error(f'Invalid learning rate: {lr}. i.e. lr -> (0, 1)'))
-            return -1
-        
-        return lr
-
-    
-    def get_optim(self,) -> Optimizer:
-        return SGD(self.model.parameters(), lr=self.lr)
-    
-    
-    def get_criterion(self, ) -> nn.Module:
-        return nn.CrossEntropyLoss()
-    
-    
-    def load_data(self, dataset: str) -> Tuple[DataLoader, DataLoader]:
-        # 数据转换：将图像转换为张量并进行标准化
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.5,), (0.5,)),  # 归一化
-            transforms.Resize((224, 224))
-        ])
-        # 加载训练和测试数据集
-        if dataset == 'fashion_mnist':
-            train_dataset = datasets.FashionMNIST(root='./data', train=True, download=True, transform=transform)
-            val_dataset = datasets.FashionMNIST(root='./data', train=False, download=True, transform=transform)
-        else:
-            print(Error(''))
-
-        # 创建数据加载器
-        train_loader = DataLoader(train_dataset, batch_size=self.batch, shuffle=True)
-        val_loader = DataLoader(val_dataset, batch_size=self.batch, shuffle=False)
-
-        return train_loader, val_loader
     
     
     def train(self,) -> Tuple[float, float]:
@@ -292,12 +151,15 @@ class TrainEngine:
         return inner_hook
 
     def get_output_shape(self, layer=None):
-        input_tensor = torch.randn(1, 3, 224, 224).to(self.device)
+        input_tensor = torch.randn(1, 1, 224, 224).to(self.device)
         #input_tensor = torch.randn(1, 1, 28, 28).to(self.device)
 
         # 注册 hook
         hooks = []
         for name, module in self.model.named_modules():
+            #print(module)
+            #print(name)
+            #print('\n---------------------\n')
             if module == layer:
                 hook = module.register_forward_hook(self._print_output_shape(name))
                 hooks.append(hook)
