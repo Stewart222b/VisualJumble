@@ -1,6 +1,6 @@
 import inspect
 import time
-
+import sys
 # Colors | 颜色
 RED = '\033[31m' # red color | 红色
 GREEN = '\033[32m' # green color | 绿色
@@ -13,12 +13,15 @@ UP_ONE_LINE = '\033[F' # move cursor up one line | 光标上移一行
 DOWN_ONE_LINE = '\033[B' # move cursor down one line | 光标下移一行
 CLEAR_LINE = '\033[K' # clear line | 清除一行
 
+def exit():
+    sys.exit()
+
 class Color:
     """
     A class to handle color formatting of text using ANSI codes. | 处理文本颜色格式化的类，使用ANSI代码。
 
     Attributes:
-        COLORS (dict): A dictionary mapping color names to ANSI escape codes. | 将颜色名称映射到ANSI转义码的字典。
+        COLORS (dict): A dictionary mapping color names to ANSI escape codes. | 将颜色名称映射到 ANSI 转义码的字典。
 
     Methods:
         __new__(cls, text, color): Return the formatted text with the specified color. | 返回带有指定颜色的格式化文本。
