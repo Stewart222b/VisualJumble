@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -8,10 +9,8 @@ class MyVGGBlock(nn.Module):
         super().__init__()
         layers = []
         for _ in range(num_convs):
-            layers += nn.Sequential(
-                nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1),
-                nn.ReLU()
-            )
+            layers.append(nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1))
+            layers.append(nn.ReLU(True))
             in_channels = out_channels
 
         self.conv = nn.Sequential(*layers)
@@ -42,7 +41,7 @@ class MyVGG(nn.Module):
         self.layers = self.make_layers(version)
         
         self.fc = nn.Sequential(
-            nn.Flatten(),
+            #nn.Flatten(),
             nn.Linear(512 * 7 * 7, 4096), nn.ReLU(True), nn.Dropout(0.5),
             nn.Linear(4096, 4096), nn.ReLU(True), nn.Dropout(0.5),
             nn.Linear(4096, cls_num)
@@ -68,5 +67,6 @@ class MyVGG(nn.Module):
 
     def forward(self, x):
         x = self.layers(x)
+        x = torch.flatten(x, 1)
         x = self.fc(x)
         return x
