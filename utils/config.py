@@ -68,6 +68,19 @@ def get_device(device_name: str, kwarg: str=None) -> torch.device:
 
 
 def get_model(model_name: str, return_info: bool=False, kwarg: str=None):
+    """
+    Get a model and optionally return its information.
+
+    Args:
+        model_name (str): The name of the model to retrieve. 模型名称
+        return_info (bool, optional): Whether to return model information. Defaults to False. 是否返回模型信息，默认为 False。
+        kwarg (str, optional): Override for model_name if provided. Defaults to None. 如果提供，将覆盖 model_name，默认为 None。
+
+    Returns:
+        model: The initialized model object. 初始化的模型对象
+        info (optional): The model information if return_info is True. 如果 return_info 为 True，返回模型信息
+    """
+    
     if kwarg:
         model_name = kwarg
 
@@ -101,6 +114,17 @@ def get_model(model_name: str, return_info: bool=False, kwarg: str=None):
 
 
 def get_epoch(epoch: int, kwarg: int=None) -> int:
+    """
+    Get the number of epochs for training.
+
+    Args:
+        epoch (int): The number of epochs. 训练的轮数
+        kwarg (int, optional): Override for epoch if provided. Defaults to None. 如果提供，将覆盖 epoch，默认为 None。
+
+    Returns:
+        int: Validated number of epochs. 验证后的轮数
+    """
+
     if kwarg:
         epoch = kwarg
 
@@ -112,6 +136,17 @@ def get_epoch(epoch: int, kwarg: int=None) -> int:
 
 
 def get_batch(batch: int, kwarg: int=None) -> int:
+    """
+    Get the batch size for training.
+
+    Args:
+        batch (int): The batch size. 批量大小
+        kwarg (int, optional): Override for batch if provided. Defaults to None. 如果提供，将覆盖 batch，默认为 None。
+
+    Returns:
+        int: Validated batch size. 验证后的批量大小
+    """
+
     if kwarg:
         batch = kwarg
 
@@ -126,6 +161,17 @@ def get_batch(batch: int, kwarg: int=None) -> int:
 
 
 def get_lr(lr: float, kwarg: float=None) -> float:
+    """
+    Get the learning rate for training.
+
+    Args:
+        lr (float): The learning rate. 学习率
+        kwarg (float, optional): Override for lr if provided. Defaults to None. 如果提供，将覆盖 lr，默认为 None。
+
+    Returns:
+        float: Validated learning rate. 验证后的学习率
+    """
+
     if kwarg:
         lr = kwarg
     
@@ -137,6 +183,19 @@ def get_lr(lr: float, kwarg: float=None) -> float:
 
 
 def get_optim(optimizer, model, lr, kwarg) -> Optimizer:
+    """
+    Get the optimizer for training.
+
+    Args:
+        optimizer: The optimizer type. | 优化器类型
+        model: The model to optimize. | 待优化的模型
+        lr: The learning rate. | 学习率
+        kwarg: Override for optimizer if provided. | 如果提供，将覆盖 optimizer。
+
+    Returns:
+        Optimizer: The optimizer object. | 优化器对象
+    """
+
     if kwarg:
         optimizer = kwarg
 
@@ -148,6 +207,17 @@ def get_optim(optimizer, model, lr, kwarg) -> Optimizer:
 
 
 def get_criterion(criterion, kwarg) -> nn.Module:
+    """
+    Get the loss function for training.
+
+    Args:
+        criterion: The loss function type. 损失函数类型
+        kwarg: Override for criterion if provided. 如果提供，将覆盖 criterion。
+
+    Returns:
+        nn.Module: The loss function object. 损失函数对象
+    """
+
     if kwarg:
         criterion = kwarg
 
