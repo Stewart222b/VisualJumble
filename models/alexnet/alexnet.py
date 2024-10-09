@@ -1,4 +1,4 @@
-import torch
+from model_info import ModelInfo
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -46,3 +46,14 @@ class MyAlexNet(nn.Module):
         x = self.dropout(x)
         x = self.fc3(x)
         return x
+    
+class AlexNetInfo(ModelInfo):
+    def __init__(self, **kwargs) -> None:
+        input = (224, 224)
+        super().__init__(input, **kwargs)
+        
+    def pre(self, img):        
+        return img
+    
+    def post(self, output):
+        return output

@@ -1,1 +1,1 @@
-from .vgg import MyVGG
+from .vgg import MyVGG, VGGInfo

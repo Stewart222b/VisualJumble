@@ -1,4 +1,6 @@
+from PIL import Image, ImageDraw, ImageFont
 import cv2
+import numpy as np
 
 '''def binary_draw(frame, mode, first_choice, second_choice):
     """
@@ -61,3 +63,13 @@ def config_writer(src_path, file_name):
     out = cv2.VideoWriter(file_name, fourcc, 30.0, (w, h))
 
     return cap, out
+
+
+def cv2ImgAddText(img, text, pos, textColor=(255, 0, 0), textSize=12):
+    if (isinstance(img, np.ndarray)):  # detect opencv format or not
+        img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    draw = ImageDraw.Draw(img)
+    fontText = ImageFont.truetype("utils/NotoSansCJK-Regular.ttc", textSize, encoding="utf-8")
+    draw.text(pos, text, textColor, font=fontText)
+
+    return cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)

@@ -5,7 +5,6 @@ import shutil
 import os
 
 
-
 class ImageCompressor:
     valid_tool = ['opencv', 'pillow']
 

@@ -1,3 +1,4 @@
-from .lenet import MyLeNet
-from .alexnet import MyAlexNet
-from .vgg import MyVGG
+from .lenet import MyLeNet, LeNetInfo
+from .alexnet import MyAlexNet, AlexNetInfo
+from .vgg import MyVGG, VGGInfo
+from .lprnet import MyLPRNet, LPRNetInfo

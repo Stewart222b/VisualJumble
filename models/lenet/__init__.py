@@ -1,1 +1,1 @@
-from .lenet import MyLeNet
+from .lenet import MyLeNet, LeNetInfo

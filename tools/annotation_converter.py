@@ -2,8 +2,6 @@ from abc import ABC, abstractmethod
 from utils import *
 from pathlib import Path
 import json
-import shutil
-import os
 import cv2 
 
 class Converter(ABC):

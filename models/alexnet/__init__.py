@@ -1,1 +1,1 @@
-from .alexnet import MyAlexNet
+from .alexnet import MyAlexNet, AlexNetInfo

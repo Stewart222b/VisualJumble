@@ -1,6 +1,6 @@
+from model_info import ModelInfo
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 from utils.io import *
 
@@ -75,3 +75,14 @@ class MyVGG(nn.Module):
         x = torch.flatten(x, 1)
         x = self.fc(x)
         return x
+    
+class VGGInfo(ModelInfo):
+    def __init__(self, **kwargs) -> None:
+        input = (224, 224)
+        super().__init__(input, **kwargs)
+        
+    def pre(self, img):
+        return img
+    
+    def post(self, output):
+        return output
