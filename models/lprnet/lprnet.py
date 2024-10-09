@@ -1,4 +1,4 @@
-from model_info import ModelInfo
+from models.model_info import ModelInfo
 from utils.post_processing import greedy_decode
 import torch.nn as nn
 import torch

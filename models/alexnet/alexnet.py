@@ -1,4 +1,4 @@
-from model_info import ModelInfo
+from models.model_info import ModelInfo
 import torch.nn as nn
 import torch.nn.functional as F
 

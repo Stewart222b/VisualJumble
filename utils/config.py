@@ -67,7 +67,7 @@ def get_device(device_name: str, kwarg: str=None) -> torch.device:
     return device
 
 
-def get_model(model_name: str, return_info: bool=False, kwarg: str=None) -> nn.Module:
+def get_model(model_name: str, return_info: bool=False, kwarg: str=None):
     if kwarg:
         model_name = kwarg
 
@@ -78,7 +78,7 @@ def get_model(model_name: str, return_info: bool=False, kwarg: str=None) -> nn.M
     if model_name == 'lenet':
         model = models.MyLeNet()
         info = models.LeNetInfo()
-        
+
     elif model_name == 'alexnet':
         model = models.MyAlexNet()
         info = models.AlexNetInfo()
@@ -197,18 +197,10 @@ def read_image(image_path,
     Returns:
         torch.Tensor: 模型的输出.
     """
-    # 定义图片预处理流程
-    preprocess = transforms.Compose([
-        transforms.Resize(size),  # 调整图片大小
-        transforms.ToTensor(),           # 转换为张量
-        transforms.Normalize(mean=mean, std=std)  # 标准化
-    ])
-
-
     # 读取和预处理图片
     #image = Image.open(image_path).convert(mode)  # 读取图片并转换为RGB模式
     image = cv2.imread(image_path)
-    image = cv2.resize(image, (94, 24))
+    image = cv2.resize(image, size)
     
     #image = preprocess(image)                      # 应用预处理
     image = transform(image)
