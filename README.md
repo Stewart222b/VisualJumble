@@ -20,6 +20,16 @@ Some simple tools. 一些工具。
 - [Image capture]()
 
 
+## Models
+
+Some CV models. 一些CV模型
+
+- [LeNet](/models/lenet/lenet.py)
+- [AlexNet](/models/alexnet/alexnet.py)
+- [VGG](/models/vgg/vgg.py)
+- [LPRNet](/models/lprnet/lprnet.py)
+
+
 ## Datasets
 
 Some [datasets](/datasets/README.md). 一些数据集
