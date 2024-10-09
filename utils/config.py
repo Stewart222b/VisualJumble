@@ -250,32 +250,24 @@ def load_dataset(dataset: str, batch: int, kwarg) -> Tuple[DataLoader, DataLoade
     return train_loader, val_loader
 
 
-def read_image(image_path, 
-               transform,
-               size=(112, 112), 
-               mean=[0.485, 0.456, 0.406], 
-               std=[0.229, 0.224, 0.225], 
-               mode='RGB'):
-    """
-    读取单张图片，进行预处理
-    
-    Args:
-        model (torch.nn.Module): 训练好的 PyTorch 模型.
-        image_path (str): 图片的路径.
-        device (str): 设备类型 ('cpu' 或 'cuda').
-    
-    Returns:
-        torch.Tensor: 模型的输出.
-    """
+def read_image(image_path, size=(112, 112)):
+    '''
+    read image
+    '''
     # 读取和预处理图片
     #image = Image.open(image_path).convert(mode)  # 读取图片并转换为RGB模式
     image = cv2.imread(image_path)
     image = cv2.resize(image, size)
     
-    #image = preprocess(image)                      # 应用预处理
-    image = transform(image)
+    return image
+
+
+def load_model(model, pretrained, device):
+    if pretrained:
+        model.load_state_dict(torch.load(pretrained, map_location=device))
+        print(Info("Load pretrained model successfully! 成功读取预训练模型！"))
+    else:
+        print(Error("Can't found pretrained mode, please check! 无法找到预训练模型，请检查！"))
+        exit()
     
-
-
-    return torch.from_numpy(image).unsqueeze(0)
-    return image.unsqueeze(0)                      # 增加批量维度
+    return model

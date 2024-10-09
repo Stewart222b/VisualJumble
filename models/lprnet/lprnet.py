@@ -100,7 +100,7 @@ class LPRNetInfo(ModelInfo):
         img *= 0.0078125
         img = np.transpose(img, (2, 0, 1))
         
-        return img
+        return torch.from_numpy(img).unsqueeze(0)
     
     def post(self, output):
         return greedy_decode(output)

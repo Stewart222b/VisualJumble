@@ -1,4 +1,3 @@
-from torch.utils.data import *
 import numpy as np
 from .param import *
 
@@ -30,11 +29,11 @@ def greedy_decode(out):
     for i, label in enumerate(preb_labels):
         lb = ""
         for i in label:
-            print(i)
             lb += CHARS[i]
         result.append(lb)
     
     return result
+
     for i, label in enumerate(preb_labels):
         # show image and its predict label
         if True:
